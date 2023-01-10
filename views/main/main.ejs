@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <title>Invest-a-Track - Main</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        function parser(str) {
+            str = str.replace(/\s/g, '');
+            str = str.replace(/,/g, '');
+            str = str.substring(1);
+            str = parseFloat(str);
+            return str;
+        }
+        let socket = io();
+        socket.on('changes', (stock) => {
+            let oldPrice = document.getElementById(stock.id).innerHTML;
+            let current = document.getElementById('<%= user._id %>').innerHTML;
+            let quantity = document.getElementById(stock.id + ' qty').innerHTML;
+
+            console.log(current);
+
+            oldPrice = parser(oldPrice);
+            current = parser(current);
+            console.log(current);
+            quantity = quantity.replace(/\s/g, '');
+            console.log('QTY' + quantity);
+            stock.price = parseFloat(stock.price);
+
+            current -= (oldPrice * quantity);
+            current += (stock.price * quantity);
+
+            if (document.getElementById(stock.id)) {
+                console.log('TRUE');
+                document.getElementById('<%= user._id %>').innerHTML = (current).toLocaleString('en-us', {
+                    style: 'currency', currency: 'USD'
+                })
+            }
+
+            console.log(oldPrice + 2);
+
+            document.getElementById(stock.id).innerHTML = (stock.price).toLocaleString('en-us', {
+                style: 'currency', currency: 'USD'
+            })
+        })
+    </script>
+</head>
+
+<body>
+    <nav>
+        <ul>
+            <li><a href="../main/main.html" style="text-decoration:underline;font-weight:bold;">Home</a></li>
+            <li><a href="../assets/assets.html">My Assets</a></li>
+            <li><a href="../browse/browse.html">Browse</a></li>
+        </ul>
+    </nav>
+    <div class="scrollable">
+        <input type="search" placeholder="Search for a stock">
+        <div class="mainContainer">
+            <section class="collections" id="collections">
+                <h1>Collections</h1>
+                <% stocks.forEach (stock=> { %>
+                    <hr>
+                    <div class='listBlock'>
+                        <div class='listCol1'>
+                            <span class='listPrice'>
+                                <%= stock.stockID.name%>
+                            </span>
+                            <span class='listFullName' id='<%= stock.stockID._id %> qty'>
+                                <%= stock.quantity %>
+                            </span>
+                        </div>
+                        <div class='listCol2'>
+                            <div class='listGraph'></div>
+                            <span class='listPrice' id=<%=stock.stockID._id %> >
+                                <%= (stock.stockID.price).toLocaleString('en-us', {style: 'currency' , currency: 'USD'
+                                    }) %>
+                            </span>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <% }) %>
+
+            </section>
+            <section class="snapshot">
+                <h1 id=<%=user._id %>><%= user.currentTotal.toLocaleString('en-us', {style: 'currency' ,
+                        currency: 'USD' }) %>
+                </h1>
+                <article class="graphSection">
+                    <h2 id="graphTitle"></h2>
+                    <div class="buttonSection">
+                        <div class="rangeButtons">
+                            <label id="label24h" for="24h" name="rangeButtons">24h</label>
+                            <label id="label7d" for="7d" name="rangeButtons">7d</label>
+                            <label id="label1m" for="1m" name="rangeButtons">1m</label>
+                            <label id="label6m" for="6m" name="rangeButtons">6m</label>
+                            <label id="label1y" for="1y" name="rangeButtons">1y</label>
+                            <label id="labelYTD" for="YTD" name="rangeButtons">YTD</label>
+                            <label id="labelMTD" for="MTD" name="rangeButtons">MTD</label>
+
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="24h" value="1">
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="7d" value="7">
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="1m" value="30"
+                                checked="checked">
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="6m" value="120">
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="1y" value="365">
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="YTD" value="YTD">
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="MTD" value="MTD">
+                        </div>
+                        <div class="stockButtons" id="stockButtons">
+                            <% let history=[];%>
+                                <% let names=[]; %>
+                                    <%let count=0; %>
+                                        <% stocks.forEach (stock=> { %>
+                                            <% let stockInfo=JSON.stringify(stock.stockID.history) %>
+                                                <input type='radio' name='stockButtons'
+                                                    oninput="radioInput('<%= stock.stockID.name%>', '<%= stockInfo%>')"
+                                                    id=<%=stock.stockID.name %>>
+                                                <label id='label<%= stock.stockID.name%>' name='labelStockButtons'
+                                                    for='<%= stock.stockID.name%>'>
+                                                    <%= stock.stockID.name%>
+                                                </label>
+                                                <% history.push(stock.stockID.history) %>
+                                                    <% names.push(stock.stockID.name) %>
+                                                        <% count++ %>
+                                                            <% }) %>
+
+                        </div>
+                        <div class="rangeButtons">
+                            <label for="percent" name="radioButtons" id="labelpercent"> % </label>
+                            <label for="high-low" name="radioButtons" id="labelhigh-low">High/Low</label>
+                            <label for="open-close" name="radioButtons" id="labelopen-close">Open/Close</label>
+                            <label for="high-low-open-close" name="radioButtons"
+                                id="labelhigh-low-open-close">All</label>
+
+                            <input type="radio" oninput="displayGraph()" name="dataType" value="percent" id="percent">
+                            <input type="radio" oninput="displayGraph()" name="dataType" value="high-low" id="high-low">
+                            <input type="radio" oninput="displayGraph()" name="dataType" value='open-close'
+                                id="open-close">
+                            <input type="radio" oninput="displayGraph()" name="dataType" value='high-low-open-close'
+                                id="high-low-open-close" checked="checked">
+                        </div>
+                    </div>
+                    <article class="mainGraph" id="graph"></article>
+                </article>
+                <article class="mainStocks">STOCK INFO</article>
+                <h1>Finance News</h1>
+                <article class="mainNews">PRESIDENT BIDEN ATE OBAMA</article>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- <script src="../graph.js"></script> -->
+
+    <script>
+
+        let currentStock = [];
+
+        let dataPoints = [];
+        function radioInput(name, stock) {
+            console.log(stock)
+            currentStock[2] = stock;
+            currentStock[1] = '';
+            currentStock[0] = name;
+
+            updateButton(name, 'stock');
+            displayGraph();
+        }
+        function displayGraph() {
+
+            let stockName = currentStock[0], mydata = currentStock[2];
+            mydata = JSON.parse(mydata);
+            console.log(mydata);
+            dataPoints = mydata;
+
+            dataPoints = parseData(mydata);
+
+            let range = updateRange(dataPoints[0].length);
+
+            document.getElementById('graphTitle').innerHTML = `${stockName} Performance`;
+
+            var config = {
+                displayModeBar: false,
+                scrollZoom: false,
+                responsive: true
+            }
+
+            const radioOutput = document.getElementsByName('dataType');
+            let type;
+
+            for (let x of radioOutput) {
+                if (x.checked) {
+                    type = x.value;
+                }
+            }
+
+            Plotly.react('graph', constructData(), updateLayout(range, type), config);
+        }
+
+        function constructData() {
+            const radioOutput = document.getElementsByName('dataType');
+            let xpoints = dataPoints[0], highpoints = dataPoints[1], lowpoints = dataPoints[2], openpoints = dataPoints[3], closepoints = dataPoints[4];
+            const percentpoints = [];
+            const length = xpoints.length;
+
+            for (let i = 0; i < length; i++) {
+                let prevDay, price;
+                if (i === 0) {
+                    prevDay = closepoints[i], price = closepoints[i + 1];
+                } else {
+                    prevDay = closepoints[i - 1], price = closepoints[i];
+                }
+
+                let percent = ((price - prevDay) / prevDay) * 100;
+                percentpoints.push(percent);
+            }
+
+
+
+            let dataType;
+            for (let y of radioOutput) {
+                if (y.checked) {
+                    dataType = y.value;
+                    updateButton(y.id, 'radio');
+                }
+            }
+
+            let data = [];
+
+            if (dataType === 'high-low' || dataType === 'high-low-open-close') {
+                data.push({
+                    x: xpoints,
+                    y: highpoints,
+                    hovertemplate: '$%{y:.2f}',
+                    mode: 'lines',
+                    name: 'High',
+                    line: { color: '#1eb870', width: 3 }
+                }, {
+                    x: xpoints,
+                    y: lowpoints,
+                    hovertemplate: '$%{y:.2f}',
+                    mode: 'lines',
+                    name: 'Low',
+                    line: { color: '#e3264a', width: 3 }
+                });
+            }
+            if (dataType === 'open-close' || dataType === 'high-low-open-close') {
+                data.push({
+                    x: xpoints,
+                    y: openpoints,
+                    hovertemplate: '$%{y:.2f}',
+                    mode: 'lines',
+                    name: 'Open',
+                    line: { color: '#008ef7', width: 3 }
+                }, {
+                    x: xpoints,
+                    y: closepoints,
+                    hovertemplate: '$%{y:.2f}',
+                    mode: 'lines',
+                    name: 'Close',
+                    line: { color: '#eeae2b', width: 3 }
+                });
+            }
+            if (dataType === 'percent') {
+                data.push({
+                    x: xpoints,
+                    y: percentpoints,
+                    hovertemplate: '%{y:.2f}%',
+                    mode: 'lines',
+                    name: 'Percent Change',
+                    line: { color: '#008ef7', width: 3 }
+                });
+            }
+
+            return data;
+        }
+
+        function updateLayout(range, type) {
+            let ymax = findMax(range, type);
+            let ymin = findMin(range, type);
+
+            let prefix, form;
+
+            if (type === 'percent') {
+                prefix = '';
+                form = ',.';
+                suffix = '%';
+            } else {
+                prefix = '$';
+                form = ',.';
+                suffix = '';
+            }
+
+            let now = new Date();
+            let xStart = now - (range * 1000 * 60 * 60 * 24);
+
+            let layout = {
+                margin: { t: 10 },
+                showlegend: true,
+                legend: { x: .5, y: -0.25, xanchor: 'center', yanchor: 'top', "orientation": "h", font: { size: '.8vw' }, itemclick: false, itemdoubleclick: false },
+                xaxis: {
+                    mirror: true, ticks: 'outside', showline: true, linecolor: 'white', linewidth: 3, tickangle: 30, tickcolor: 'white', tickwidth: 2, showgrid: true, gridwidth: 2,
+                    gridcolor: 'rgba(255,255,255,.2)', range: [xStart, now], showspikes: true, spikecolor: 'rgba(255,255,255,.4)', spikethickness: 2, spikemode: 'across'
+                },
+                yaxis: {
+                    mirror: true, ticks: 'outside', showline: true, linecolor: 'white', linewidth: 3, tickcolor: 'white', tickwidth: 2, tickprefix: prefix, ticksuffix: suffix, showgrid: true, gridwidth: 2, gridcolor: 'rgba(255,255,255,.2)', range: [ymin - (0.05 * (ymax - ymin)), ymax + (0.05 * (ymax - ymin))], format: form,
+                    showspikes: false
+                },
+                hovermode: 'x unified',
+                hoverlabel: { bordercolor: 'white', borderwidth: 20, bgcolor: '#2e4766', font: { color: 'white' }, },
+                transition: { duration: 700, ordering: 'traces first', easing: 'elastic' },
+                font: { color: 'white', family: 'Trebuchet MS', size: '16' },
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: '#1b3046', //#2e4766
+                dragmode: 'zoom',
+            };
+
+            return layout;
+        }
+
+        function updateRange(length) {
+            let rangeRadioButtons = document.getElementsByName('rangeRadioButtons');
+            let range = 30;
+
+            for (let x of rangeRadioButtons) {
+                if (x.checked) {
+                    if (x.value === 'YTD') {
+                        const now = new Date();
+                        const yearStart = new Date(now.getFullYear(), 0, 0);
+                        range = Math.floor((now - yearStart) / (1000 * 60 * 60 * 24));
+                    } else if (x.value === 'MTD') {
+                        const now = new Date();
+                        const monthStart = new Date(now.getFullYear(), now.getMonth(), 0);
+                        range = Math.floor((now - monthStart) / (1000 * 60 * 60 * 24));
+                    } else {
+                        range = Number(x.value);
+                    }
+                    updateButton(x.id, 'range');
+                }
+            }
+
+            if (range === 0) {
+                range = length;
+            }
+
+            return range;
+        }
+
+        function updateButton(elementid, type) {
+            let buttons = [];
+
+            if (type === 'range') {
+                buttons = document.getElementsByName('rangeButtons');
+            } else if (type === 'radio') {
+                buttons = document.getElementsByName('radioButtons');
+            } else if (type === 'stock') {
+                buttons = document.getElementsByName('labelStockButtons')
+            }
+
+            for (let x of buttons) {
+                x.style.backgroundColor = 'transparent';
+            }
+
+            document.getElementById(`label${elementid}`).style.backgroundColor = 'mediumseagreen';
+            document.getElementById(`label${elementid}`).style.color = 'white';
+        }
+
+        function findMax(range, type) {
+            let max = -Infinity;
+            let array1 = dataPoints[1], array2 = dataPoints[2], array3 = dataPoints[3], array4 = dataPoints[4], array5 = dataPoints[5];
+            const length = array1.length;
+
+            if (type === 'high-low' || type === 'open-close' || type === 'high-low-open-close') {
+                for (let i = length - range - 1; i < length; i++) {
+                    if (array1[i] > max) {
+                        max = array1[i];
+                    }
+                }
+                for (let i = length - range - 1; i < length; i++) {
+                    if (array2[i] > max) {
+                        max = array2[i];
+                    }
+                }
+                for (let i = length - range - 1; i < length; i++) {
+                    if (array3[i] > max) {
+                        max = array3[i];
+                    }
+                }
+                for (let i = length - range - 1; i < length; i++) {
+                    if (array4[i] > max) {
+                        max = array4[i];
+                    }
+                }
+
+            } else if (type === 'percent') {
+                for (let i = length - range - 1; i < length; i++) {
+                    if (array5[i] > max) {
+                        max = array5[i];
+                    }
+                }
+            }
+
+            return max;
+        }
+
+        function findMin(range, type) {
+            let min = Infinity;
+            let array1 = dataPoints[1], array2 = dataPoints[2], array3 = dataPoints[3], array4 = dataPoints[4], array5 = dataPoints[5];
+            const length = array1.length;
+
+            if (type === 'high-low' || type === 'open-close' || type === 'high-low-open-close') {
+                for (let i = length - range - 1; i < length; i++) {
+                    if (array1[i] < min) {
+                        min = array1[i];
+                    }
+                }
+                for (let i = length - range - 1; i < length; i++) {
+                    if (array2[i] < min) {
+                        min = array2[i];
+                    }
+                }
+                for (let i = length - range - 1; i < length; i++) {
+                    if (array3[i] < min) {
+                        min = array3[i];
+                    }
+                }
+                for (let i = length - range - 1; i < length; i++) {
+                    if (array4[i] < min) {
+                        min = array4[i];
+                    }
+                }
+
+            } else if (type === 'percent') {
+                for (let i = length - range - 1; i < length; i++) {
+                    if (array5[i] < min) {
+                        min = array5[i];
+                    }
+                }
+            }
+
+            return min;
+        }
+
+        function parseData(myData) {
+            const xpoints = [], highpoints = [], lowpoints = [], openpoints = [], closepoints = [];
+
+            for (let entry of myData) {
+                xpoints.push(entry.date);
+                highpoints.push(entry.high);
+                lowpoints.push(entry.low);
+                openpoints.push(entry.open);
+                closepoints.push(entry.close);
+            }
+
+            return [xpoints, highpoints, lowpoints, openpoints, closepoints];
+        }
+
+        function createStockButtons() {
+            const stockButtons = document.getElementById("stockButtons");
+            stockButtons.innerHTML = '';
+            const length = userData.length;
+
+            for (let i = 0; i < length; i++) {
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'stockButtons';
+                radio.id = userData[i][0];
+                radio.oninput = function () {
+                    currentStock = userData[i];
+                    updateButton(userData[i][0], 'stock');
+                    displayGraph();
+                };
+
+                if (i === 0) {
+                    radio.setAttribute('checked', 'checked');
+                    currentStock = userData[0];
+                }
+
+                const button = document.createElement('label');
+                button.id = `label${userData[i][0]}`
+                button.setAttribute('name', 'labelStockButtons');
+                button.setAttribute('for', userData[i][0]);
+                button.innerHTML = userData[i][0];
+
+                stockButtons.appendChild(radio);
+                stockButtons.appendChild(button);
+            }
+
+            updateButton(currentStock[0], 'stock');
+            displayGraph();
+        }
+
+    </script>
+
+</body>
+
+</html>

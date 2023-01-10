@@ -1,0 +1,68 @@
+<hr>
+    <section class="stockInfo">
+        <h2 id="stockInfoTitle"></h2>
+        <table>
+            <tr>
+                <th>High:</th>
+                <td id="infoHigh" style="border-right:3px solid white"></td>
+                <th>Today's Gains:</th>
+                <td id="infoGains"></td>
+            </tr>
+            <tr>
+                <th>Low:</th>
+                <td id="infoLow" style="border-right:3px solid white"></td>
+                <th>Volume:</th>
+                <td id="infoVolume"></td>
+            </tr>
+            <tr>
+                <th>Open:</th>
+                <td id="infoOpen" style="border-right:3px solid white"></td>
+                <th>Market Cap:</th>
+                <td id="infoCap"></td>
+            </tr>
+        </table>
+    </section>
+
+    <script>
+        getInfo(searchedStock);
+        function getInfo(searchedStock) {
+            let title = document.getElementById('searchedStockTitle');
+            let stockInfoTitle = document.getElementById('stockInfoTitle');
+            let infoHigh = document.getElementById('infoHigh');
+            let infoLow = document.getElementById('infoLow');
+            let infoOpen = document.getElementById('infoOpen');
+            let infoGains = document.getElementById('infoGains');
+            let infoVolume = document.getElementById('infoVolume');
+            let infoCap = document.getElementById('infoCap');
+
+            const stockName = searchedStock[0], stockFullName = searchedStock[1], mydata = searchedStock[2];
+            dataPoints = parseData(mydata);
+
+            const highpoints = dataPoints[1], lowpoints = dataPoints[2], openpoints = dataPoints[3];
+            //const rawvaluepoints = dataPoints[5];
+            const length = dataPoints[0].length;
+            const currentValue = 157.68;
+            //const currentValue = rawvaluepoints[length - 1];
+
+            const high = Math.max.apply(null, highpoints.slice(length - 8, length - 1));
+            const low = Math.min.apply(null, lowpoints.slice(length - 8, length - 1));
+            const open = openpoints[length - 1];
+            const gains = currentValue - open;
+            const volume = "i dunno";
+            const cap = "i also dunno";
+
+            title.innerHTML = `${stockName} - $${currentValue}`;
+            stockInfoTitle.innerHTML = `${stockFullName} (${stockName})`;
+
+            infoHigh.innerHTML = '$' + high.toFixed(2);
+            infoLow.innerHTML = '$' + low.toFixed(2);
+            infoOpen.innerHTML = '$' + open.toFixed(2);
+            infoGains.innerHTML = '$' + gains.toFixed(2);
+            infoVolume.innerHTML = volume;
+            infoCap.innerHTML = cap;
+
+            if (gains >= 0) {
+                infoGains.style.color = 'mediumseagreen';
+            }
+        }
+    </script>

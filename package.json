@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "dotenv": "^16.0.2",
+    "ejs": "^3.1.8",
+    "express": "^4.18.1",
+    "init": "^0.1.2",
+    "mongoose": "^6.6.1",
+    "nodemon": "^2.0.20",
+    "npm": "^8.19.2",
+    "socket.io": "^4.5.2",
+    "yahoo-finance2": "^2.3.6"
+  },
+  "name": "investatrack",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

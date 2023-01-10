@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>Invest-a-Track - My Assets</title>
+        <link rel="stylesheet" href="../main.css">
+    </head>
+    <body>
+        <nav>
+            <ul>
+                <li><a href="../main/main.html">Home</a></li>
+                <li><a href="../assets/assets.html" style="text-decoration:underline;font-weight:bold;">My Assets</a></li>
+                <li><a href="../browse/browse.html">Browse</a></li>
+            </ul>
+        </nav>
+        <div class="scrollable">
+            <input type="search" placeholder="Search for a stock">
+            <div class="stockMenu">
+                <ul>
+                    <li><a onclick="switchCrypto('all')" id="menuAll">All</a></li>
+                    <li><a onclick="switchCrypto('stocks')" id="menuStocks">Stocks</a></li>
+                    <li><a onclick="switchCrypto('crypto')" id="menuCrypto">Crypto</a></li>
+                </ul>
+            </div>
+            <div class="assetsMain">
+                <h1>Your Money - $10,482.06</h1>
+                <article class="graphSection">
+                    <h2 id="graphTitle"></h2>
+                    <div class="buttonSection">
+                        <div class="rangeButtons">
+                            <label id="label24h" for="24h" name="rangeButtons">24h</label>
+                            <label id="label7d" for="7d" name="rangeButtons">7d</label>
+                            <label id="label1m" for="1m" name="rangeButtons">1m</label>
+                            <label id="label3m" for="3m" name="rangeButtons">3m</label>
+                            <label id="label6m" for="6m" name="rangeButtons">6m</label>
+                            <label id="label1y" for="1y" name="rangeButtons">1y</label>
+                            <label id="label2y" for="2y" name="rangeButtons">2y</label>
+                            <label id="labelYTD" for="YTD" name="rangeButtons">YTD</label>
+                            <label id="labelMTD" for="MTD" name="rangeButtons">MTD</label>
+
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="24h" value="1">
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="7d" value="7">
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="1m" value="30" checked="checked";>
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="3m" value="90">
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="6m" value="120">
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="1y" value="365">
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="2y" value="730">
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="YTD" value="YTD">
+                            <input type="radio" oninput="displayGraph()" name="rangeRadioButtons" id="MTD" value="MTD">
+                        </div>
+                        <div class="stockButtons" id="stockButtons"></div>
+                        <div class="rangeButtons">
+                            <label for="percent" name="radioButtons" id="labelpercent">Percent</label>
+                            <label for="high-low" name="radioButtons" id="labelhigh-low">High/Low</label>
+                            <label for="open-close" name="radioButtons" id="labelopen-close">Open/Close</label>
+                            <label for="high-low-open-close" name="radioButtons" id="labelhigh-low-open-close">All</label>
+
+                            <input type="radio" oninput="displayGraph()" name="dataType" value="percent" id="percent">
+                            <input type="radio" oninput="displayGraph()" name="dataType" value="high-low" id="high-low">
+                            <input type="radio" oninput="displayGraph()" name="dataType" value='open-close' id="open-close">
+                            <input type="radio" oninput="displayGraph()" name="dataType" value='high-low-open-close' id="high-low-open-close" checked="checked">
+                        </div>
+                    </div>
+                    <section class="assetsGraph" id="graph"></section>
+                </article>
+                <div class="infoRow">
+                    <section class="sell">
+                        <h1>Sell Stocks</h1>
+                        <p>STOCK INFO</p>
+                    </section>
+                    <section class="assetsStocks">STOCK INFO</section>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script src="../graph.js"></script>
+        <script>switchCrypto('all');</script>
+    </body>
+</html>

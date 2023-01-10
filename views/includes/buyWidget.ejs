@@ -1,0 +1,62 @@
+<section class="buy">
+    <h1>Buy Stock</h1>
+    <hr>
+    <div class="buyItem">
+        <span>Buy Price:</span>
+        <span id="purchasePrice"></span>
+    </div>
+    <div class="buyItem">
+        <span>Owned Stock:</span>
+        <span id="ownedStock"></span>
+    </div>
+    <hr>
+    <div class="purchaseWidget">
+        <p>Purchase Amount</p>
+        <div class="purchaseSelector">
+            <button onclick="decrementBuy()"><</button>
+            <input type="text" value="1" id="purchaseAmount"></span>
+            <button onclick="incrementBuy()">></button>
+        </div>
+        <button onclick="buyStock()">BUY STOCK</button>
+    </div>
+    
+</section>
+<script>
+    loadBuyWidget(searchedStock);
+    function loadBuyWidget(searchedStock) {
+        purchasePrice = document.getElementById('purchasePrice');
+        ownedStock = document.getElementById('ownedStock');
+
+        const stockName = searchedStock[0], mydata = searchedStock[2];
+        dataPoints = parseData(mydata);
+
+        //const rawvaluepoints = dataPoints[5];
+        const length = dataPoints[0].length;
+        const currentValue = 157.68;
+        //const currentValue = rawvaluepoints[length - 1];
+
+        purchasePrice.innerHTML = '$' + currentValue.toFixed(2);
+        ownedStock.innerHTML = 5;
+    }
+
+    function incrementBuy() {
+        purchaseAmount = document.getElementById('purchaseAmount');
+        let quantity = Number(purchaseAmount.value);
+        quantity++;
+        purchaseAmount.value = quantity;
+    }
+
+    function decrementBuy() {
+        purchaseAmount = document.getElementById('purchaseAmount');
+        let quantity = Number(purchaseAmount.value);
+        
+        if (quantity > 1) {quantity--}
+        
+        purchaseAmount.value = quantity;
+    }
+
+    function buyStock() {
+        purchaseAmount = document.getElementById('purchaseAmount');
+        quantity = purchaseAmount.value;
+    }
+</script>

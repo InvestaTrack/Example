@@ -1,0 +1,19 @@
+<body>
+    <script>currentStock = ['GOOG', 'Alphabet, Inc.', goog]; searchedStock = currentStock;</script>
+    <%- include('./header.ejs') %>
+        <div class="scrollable">
+            <input type="search" placeholder="Search for a stock">
+            <div class="stockPageMain">
+                <div class="stockPageTop">
+                    <div class="stockTopLeft">
+                        <h1 id="searchedStockTitle"></h1>
+                        <hr>
+                        <%- include('./graph.ejs') %>
+                    </div>
+                    <%- include('./buyWidget.ejs') %>
+                </div>
+                <%- include('./stockInfo.ejs') %>
+            </div>
+        </div>
+        <script>displayGraph();</script>
+</body>

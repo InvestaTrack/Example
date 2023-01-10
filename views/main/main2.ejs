@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <title>Invest-a-Track - Main</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        function parser(str) {
+            str = str.replace(/\s/g, '');
+            str = str.replace(/,/g, '');
+            str = str.substring(1);
+            str = parseFloat(str);
+            return str;
+        }
+        let socket = io();
+        socket.on('changes', (stock) => {
+            let oldPrice = document.getElementById(stock.id).innerHTML;
+            let current = document.getElementById('<%= user._id %>').innerHTML;
+            let quantity = document.getElementById(stock.id + ' qty').innerHTML;
+
+            console.log(current);
+
+            oldPrice = parser(oldPrice);
+            current = parser(current);
+            console.log(current);
+            quantity = quantity.replace(/\s/g, '');
+            console.log('QTY' + quantity);
+            stock.price = parseFloat(stock.price);
+
+            current -= (oldPrice * quantity);
+            current += (stock.price * quantity);
+
+            if (document.getElementById(stock.id)) {
+                console.log('TRUE');
+                document.getElementById('<%= user._id %>').innerHTML = (current).toLocaleString('en-us', {
+                    style: 'currency', currency: 'USD'
+                })
+            }
+
+            console.log(oldPrice + 2);
+
+            document.getElementById(stock.id).innerHTML = (stock.price).toLocaleString('en-us', {
+                style: 'currency', currency: 'USD'
+            })
+        })
+    </script>
+</head>
+
+<body>
+    <%- include('../includes/header.ejs') %>
+    <div class="scrollable">
+        <input type="search" placeholder="Search for a stock">
+        <div class="mainContainer">
+            <section class="collections" id="collections">
+                <h1>Collections</h1>
+                <% stocks.forEach (stock=> { %>
+                    <hr>
+                    <div class='listBlock'>
+                        <div class='listCol1'>
+                            <span class='listPrice'>
+                                <%= stock.stockID.name%>
+                            </span>
+                            <span class='listFullName' id='<%= stock.stockID._id %> qty'>
+                                <%= stock.quantity %>
+                            </span>
+                        </div>
+                        <div class='listCol2'>
+                            <div class='listGraph'></div>
+                            <span class='listPrice' id=<%=stock.stockID._id %> >
+                                <%= (stock.stockID.price).toLocaleString('en-us', {style: 'currency' , currency: 'USD'
+                                    }) %>
+                            </span>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <% }) %>
+
+            </section>
+            <section class="snapshot">
+                <h1 id=<%=user._id %>><%= user.currentTotal.toLocaleString('en-us', {style: 'currency' ,
+                        currency: 'USD' }) %>
+                </h1>
+                <%- include('../includes/graph.ejs') %>
+                <article class="mainStocks">STOCK INFO</article>
+                <h1>Finance News</h1>
+                <article class="mainNews">PRESIDENT BIDEN ATE OBAMA</article>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- <script src="../graph.js"></script> -->
+
+
+</body>
+
+</html>
